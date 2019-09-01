@@ -15,6 +15,9 @@
 //MD5 Hash
 #include "Runtime/Core/Public/Misc/SecureHash.h"
 
+#include "Runtime/Engine/Public/VorbisAudioInfo.h"
+
+
 #include "StaticMeshResources.h"
 
 #include "HeadMountedDisplay.h"
@@ -22,7 +25,7 @@
 #include "GenericTeamAgentInterface.h"
 
 //For PIE error messages
-#include "MessageLog.h"
+#include "Runtime/Core/Public/Logging/MessageLog.h"
 #define LOCTEXT_NAMESPACE "Fun BP Lib"
 
 //Use MessasgeLog like this: (see GameplayStatics.cpp
@@ -298,6 +301,9 @@ ULevelStreaming* UVictoryBPFunctionLibrary::VictoryLoadLevelInstance(
 	int32 InstanceNumber,
 	FVector Location, FRotator Rotation,bool& Success
 ){ 
+	//! See .h deprecation
+	
+	/*
 	Success = false; 
     if(!WorldContextObject) return nullptr;
 	 
@@ -311,7 +317,7 @@ ULevelStreaming* UVictoryBPFunctionLibrary::VictoryLoadLevelInstance(
 	FName LevelFName = FName(*FullName);
     FString PackageFileName = FullName;   
 	
-    ULevelStreamingKismet* StreamingLevel = NewObject<ULevelStreamingKismet>(World, ULevelStreamingKismet::StaticClass(), NAME_None, RF_Transient, NULL);
+    ULevelStreamingDynamic* StreamingLevel = NewObject<ULevelStreamingDynamic>(World, ULevelStreamingDynamic::StaticClass(), NAME_None, RF_Transient, NULL);
 	
 	if(!StreamingLevel)
 	{
@@ -342,7 +348,7 @@ ULevelStreaming* UVictoryBPFunctionLibrary::VictoryLoadLevelInstance(
  
     StreamingLevel->LevelColor = FColor::MakeRandomColor();
     StreamingLevel->bShouldBeLoaded = true;
-    StreamingLevel->bShouldBeVisible = true;
+    StreamingLevel->SetShouldBeVisible(true);
     StreamingLevel->bShouldBlockOnLoad = false;
     StreamingLevel->bInitiallyLoaded = true;
     StreamingLevel->bInitiallyVisible = true;
@@ -369,6 +375,8 @@ ULevelStreaming* UVictoryBPFunctionLibrary::VictoryLoadLevelInstance(
       
 	Success = true;
     return StreamingLevel;
+	*/
+	return nullptr;
  }	
 	
 //~~~~~~~
@@ -1822,7 +1830,7 @@ AActor* UVictoryBPFunctionLibrary::SpawnActorIntoLevel(UObject* WorldContextObje
 	//Get Level from Name!
 	ULevel* FoundLevel = NULL;
 	
-	for(const ULevelStreaming* EachLevel : World->StreamingLevels)
+	for(const ULevelStreaming* EachLevel : World->GetStreamingLevels())
 	{
 		if( ! EachLevel) continue;
 		//~~~~~~~~~~~~~~~~
@@ -1861,7 +1869,7 @@ void UVictoryBPFunctionLibrary::GetNamesOfLoadedLevels(UObject* WorldContextObje
 	//Get Level from Name!
 	ULevel* FoundLevel = NULL;
 	
-	for(const ULevelStreaming* EachLevel : World->StreamingLevels)
+	for(const ULevelStreaming* EachLevel : World->GetStreamingLevels())
 	{
 		if( ! EachLevel) continue;
 		//~~~~~~~~~~~~~~~~
@@ -3216,7 +3224,6 @@ AActor*  UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestBone(
 	//Simple Trace First
 	FCollisionQueryParams TraceParams(FName(TEXT("VictoryBPTrace::CharacterMeshTrace")), true, HitActor);
 	TraceParams.bTraceComplex = true;
-	TraceParams.bTraceAsyncScene = true;
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(TraceOwner);
 	
@@ -3250,6 +3257,7 @@ AActor*  UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestBone(
 		TraceEnd, 
 		true, 
 		false, 
+		false,
 		OutImpactPoint, 
 		OutImpactNormal,
 		ClosestBoneName,
@@ -3287,7 +3295,6 @@ AActor* UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestSocket(
 	//Simple Trace First
 	FCollisionQueryParams TraceParams(FName(TEXT("VictoryBPTrace::CharacterMeshSocketTrace")), true, HitActor);
 	TraceParams.bTraceComplex = true;
-	TraceParams.bTraceAsyncScene = true;
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(TraceOwner);
 	
@@ -3322,6 +3329,7 @@ AActor* UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestSocket(
 		TraceEnd, 
 		true, 
 		false, 
+		false,
 		OutImpactPoint, 
 		OutImpactNormal,
 		BoneName,
@@ -4630,7 +4638,7 @@ int32 UVictoryBPFunctionLibrary::fillSoundWaveInfo(class USoundWave* sw, TArray<
     sw->NumChannels = info.NumChannels;
     sw->Duration = info.Duration;
     sw->RawPCMDataSize = info.SampleDataSize;
-    sw->SampleRate = info.SampleRate;
+    sw->SetSampleRate(info.SampleRate);
 
     return 0;
 }
@@ -5093,19 +5101,19 @@ void UVictoryBPFunctionLibrary::SetGenericTeamId(AActor* Target, uint8 NewTeamId
 	}
 }
 
-FLevelStreamInstanceInfo::FLevelStreamInstanceInfo(ULevelStreamingKismet* LevelInstance)
+FLevelStreamInstanceInfo::FLevelStreamInstanceInfo(ULevelStreamingDynamic* LevelInstance)
 {
 	PackageName = LevelInstance->GetWorldAssetPackageFName();
 	PackageNameToLoad = LevelInstance->PackageNameToLoad;
 	Location = LevelInstance->LevelTransform.GetLocation();
 	Rotation = LevelInstance->LevelTransform.GetRotation().Rotator();
-	bShouldBeLoaded = LevelInstance->bShouldBeLoaded;
-	bShouldBeVisible = LevelInstance->bShouldBeVisible;
+	bShouldBeLoaded = LevelInstance->HasLoadedLevel();
+	bShouldBeVisible = LevelInstance->GetShouldBeVisibleFlag();
 	bShouldBlockOnLoad = LevelInstance->bShouldBlockOnLoad;
-	LODIndex = LevelInstance->LevelLODIndex;
+	LODIndex = LevelInstance->GetLevelLODIndex();
 };
 
-FLevelStreamInstanceInfo UVictoryBPFunctionLibrary::GetLevelInstanceInfo(ULevelStreamingKismet* LevelInstance)
+FLevelStreamInstanceInfo UVictoryBPFunctionLibrary::GetLevelInstanceInfo(ULevelStreamingDynamic* LevelInstance)
 {
 	return FLevelStreamInstanceInfo(LevelInstance);
 }
@@ -5120,7 +5128,7 @@ void UVictoryBPFunctionLibrary::AddToStreamingLevels(UObject* WorldContextObject
 	{
 		bool bAlreadyExists = false;
 
-		for (auto StreamingLevel : World->StreamingLevels)
+		for (auto StreamingLevel : World->GetStreamingLevels())
 		{
 			if (StreamingLevel->GetWorldAssetPackageFName() == LevelInstanceInfo.PackageName)
 			{
@@ -5144,11 +5152,11 @@ void UVictoryBPFunctionLibrary::AddToStreamingLevels(UObject* WorldContextObject
 			GEngine->DelayGarbageCollection();
 
 			// Setup streaming level object that will load specified map
-			ULevelStreamingKismet* StreamingLevel = NewObject<ULevelStreamingKismet>(World, ULevelStreamingKismet::StaticClass(), NAME_None, RF_Transient, nullptr);
+			ULevelStreamingDynamic* StreamingLevel = NewObject<ULevelStreamingDynamic>(World, ULevelStreamingDynamic::StaticClass(), NAME_None, RF_Transient, nullptr);
 			StreamingLevel->SetWorldAssetByPackageName(PackageName);
 			StreamingLevel->LevelColor = FColor::MakeRandomColor();
-			StreamingLevel->bShouldBeLoaded = LevelInstanceInfo.bShouldBeLoaded;
-			StreamingLevel->bShouldBeVisible = LevelInstanceInfo.bShouldBeVisible;
+			StreamingLevel->SetShouldBeLoaded(LevelInstanceInfo.bShouldBeLoaded);
+			StreamingLevel->SetShouldBeVisible(LevelInstanceInfo.bShouldBeVisible);
 			StreamingLevel->bShouldBlockOnLoad = LevelInstanceInfo.bShouldBlockOnLoad;
 			StreamingLevel->bInitiallyLoaded = true;
 			StreamingLevel->bInitiallyVisible = true;
@@ -5160,7 +5168,7 @@ void UVictoryBPFunctionLibrary::AddToStreamingLevels(UObject* WorldContextObject
 			StreamingLevel->PackageNameToLoad = LevelInstanceInfo.PackageNameToLoad;
 
 			// Add the new level to world.
-			World->StreamingLevels.Add(StreamingLevel);
+			World->AddStreamingLevel(StreamingLevel);
 
 			World->FlushLevelStreaming(EFlushLevelStreamingType::Full);
 		}
@@ -5199,7 +5207,7 @@ void UVictoryBPFunctionLibrary::RemoveFromStreamingLevels(UObject* WorldContextO
 #endif
 
 		// Find the level to unload
-		for (auto StreamingLevel : World->StreamingLevels)
+		for (auto StreamingLevel : World->GetStreamingLevels())
 		{
 
 			FName LoadedPackageName = StreamingLevel->GetWorldAssetPackageFName();
@@ -5213,10 +5221,10 @@ void UVictoryBPFunctionLibrary::RemoveFromStreamingLevels(UObject* WorldContextO
 			if(PackageNameToCheck == LoadedPackageName)
 			{
 				// This unload the level
-				StreamingLevel->bShouldBeLoaded = false;
-				StreamingLevel->bShouldBeVisible = false;
+				StreamingLevel->SetShouldBeLoaded(false);
+				StreamingLevel->SetShouldBeVisible(false);
 				// This removes the level from the streaming level list
-				StreamingLevel->bIsRequestingUnloadAndRemoval = true;
+				StreamingLevel->SetIsRequestingUnloadAndRemoval(true);
 				// Force a refresh of the world
 				World->FlushLevelStreaming(EFlushLevelStreamingType::Full);
 				break;

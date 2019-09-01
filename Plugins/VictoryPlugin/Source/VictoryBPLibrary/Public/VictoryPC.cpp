@@ -8,6 +8,7 @@
 #include "VictoryPC.h"
  
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Components/AudioComponent.h"
 
 DEFINE_LOG_CATEGORY(VictoryPCLog)
 

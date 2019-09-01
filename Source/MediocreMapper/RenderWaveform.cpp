@@ -42,7 +42,7 @@ void CalculateFrequencySpectrum(USoundWave* InSoundWaveRef, const float InStartT
 	OutFrequencies.Empty();
 
 	const int32 NumChannels = InSoundWaveRef->NumChannels;
-	const int32 SampleRate = InSoundWaveRef->SampleRate;
+	const int32 SampleRate = InSoundWaveRef->GetSampleRateForCurrentPlatform();
 
 	// Make sure the Number of Channels is correct
 	if (NumChannels > 0 && NumChannels <= 2)

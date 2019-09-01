@@ -85,3 +85,5 @@ DerivedDataCache/*
 !Plugins/ZipUtility-ue4/ThirdParty/*/**
 !Plugins/discordrpc/Source/ThirdParty/*/*/**
 !Plugins/discordrpc/SourceThirdParty/*/**
+
+.DS_Store

@@ -1,5 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+// Turning on OGG_VORBIS support for VorbisAudioInfo.h
+#define WITH_OGGVORBIS 1
+
 #include "eXiSoundVisPrivatePCH.h"
 
 #include "SoundVisComponent.h"
@@ -117,7 +120,7 @@ bool USoundVisComponent::FillSoundWaveInfo(USoundWave* InSoundWave, TArray<uint8
 	InSoundWave->NumChannels = SoundQualityInfo.NumChannels;
 	InSoundWave->Duration = SoundQualityInfo.Duration;
 	InSoundWave->RawPCMDataSize = SoundQualityInfo.SampleDataSize;
-	InSoundWave->SampleRate = SoundQualityInfo.SampleRate;
+	InSoundWave->SetSampleRate(SoundQualityInfo.SampleRate);
 
 	return true;
 }
@@ -166,7 +169,7 @@ void USoundVisComponent::CalculateFrequencySpectrum(USoundWave* InSoundWaveRef, 
 	OutFrequencies.Empty();
 
 	const int32 NumChannels = InSoundWaveRef->NumChannels;
-	const int32 SampleRate = InSoundWaveRef->SampleRate;
+	const int32 SampleRate = InSoundWaveRef->GetSampleRateForCurrentPlatform();
 
 	// Make sure the Number of Channels is correct
 	if (NumChannels > 0 && NumChannels <= 2)
@@ -605,9 +608,9 @@ float USoundVisComponent::GetCurrentPlayBackTime()
 
 void USoundVisComponent::BP_GetSpecificFrequencyValue(USoundWave* InSoundWave, TArray<float> InFrequencies, int32 InWantedFrequency, float& OutFrequencyValue)
 {
-	if (InSoundWave && InFrequencies.Num() > 0 && (int32)(InWantedFrequency * InFrequencies.Num() * 2 / InSoundWave->SampleRate) < InFrequencies.Num())
+	if (InSoundWave && InFrequencies.Num() > 0 && (int32)(InWantedFrequency * InFrequencies.Num() * 2 / InSoundWave->GetSampleRateForCurrentPlatform()) < InFrequencies.Num())
 	{
-		OutFrequencyValue = InFrequencies[(int32)(InWantedFrequency * InFrequencies.Num() * 2 / InSoundWave->SampleRate)];
+		OutFrequencyValue = InFrequencies[(int32)(InWantedFrequency * InFrequencies.Num() * 2 / InSoundWave->GetSampleRateForCurrentPlatform())];
 	}
 }
 
@@ -635,8 +638,8 @@ void USoundVisComponent::BP_GetAverageFrequencyValueInRange(USoundWave* InSoundW
 	if (InStartFrequence >= InEndFrequence || InStartFrequence < 0 || InEndFrequence > 22000) 
 		return;
 
-	int32 FStart = (int32)(InStartFrequence  * InFrequencies.Num() * 2 / InSoundWave->SampleRate);
-	int32 FEnd = (int32)(InEndFrequence * InFrequencies.Num() * 2 / InSoundWave->SampleRate);
+	int32 FStart = (int32)(InStartFrequence  * InFrequencies.Num() * 2 / InSoundWave->GetSampleRateForCurrentPlatform());
+	int32 FEnd = (int32)(InEndFrequence * InFrequencies.Num() * 2 / InSoundWave->GetSampleRateForCurrentPlatform());
 
 	if (FStart < 0 || FEnd >= InFrequencies.Num())
 		return;

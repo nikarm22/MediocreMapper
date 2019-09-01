@@ -3,12 +3,12 @@
 #include "Updater.h"
 #include "FileManagerGeneric.h"
 #include "Paths.h"
-#include <windows.h>
+// #include <windows.h>
 
 bool UUpdater::updateUpdater()
 {
-	FString source = FPaths::GameDir()+"Updates/MediocreMapper/MediocreUpdater.exe"; 
-	FString target = FPaths::GameDir() +"MediocreUpdater.exe";
+	FString source = FPaths::ProjectDir()+"Updates/MediocreMapper/MediocreUpdater.exe"; 
+	FString target = FPaths::ProjectDir() +"MediocreUpdater.exe";
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *source);
 	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*source)) 
 	{ 
