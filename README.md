@@ -5,9 +5,8 @@ This is a "fork" of a [MediocreMapper by squeaksies](https://github.com/squeaksi
 ## Purpose of this fork is to add macOS support.
 
 ### Things that are already working
-- Nothing :)
-- Well almost nothing, now I can open the project in Unreal Editor
+- Project is now can be built. Release is available in release section
 
 ### Things that are not workgin right now
-- Everything.
-- Especially related to ZipUtility-ue4 plugin, as that plugin is windows only.
+- Downloading zip files from URL or BeatSaver.
+- Many things, that I'm not aware.
