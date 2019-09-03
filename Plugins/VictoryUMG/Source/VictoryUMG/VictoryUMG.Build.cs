@@ -6,6 +6,8 @@
 	copyright 2015
 */
 using UnrealBuildTool;
+using System;
+using System.IO;
 
 public class VictoryUMG : ModuleRules
 {
@@ -27,10 +29,13 @@ public class VictoryUMG : ModuleRules
 		
 			}
 		);
-		//Private Paths
-        PrivateIncludePaths.AddRange(new string[] { 
-			"VictoryUMG/Public",
-			"VictoryUMG/Private"
+		
+		
+		PrivateIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Private"),
+		});
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Public"),
 		});
 	}
 }

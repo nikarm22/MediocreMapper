@@ -7,6 +7,8 @@
 */
 
 using UnrealBuildTool;
+using System;
+using System.IO;
 
 public class Socketer : ModuleRules
 {
@@ -20,22 +22,13 @@ public class Socketer : ModuleRules
         PrivatePCHHeaderFile = "Public/Socketer.h";
 
 
-        PublicIncludePaths.AddRange(
-			new string[] {
-				"Socketer/Public"
-				
-				// ... add public include paths required here ...
-			}
-			);
-				
 		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				"Socketer/Private",
-				
-				// ... add other private include paths required here ...
-			}
-			);
+			PrivateIncludePaths.AddRange(new string[] {
+				Path.Combine(ModuleDirectory, "Private"),
+			});
+			PublicIncludePaths.AddRange(new string[] {
+				Path.Combine(ModuleDirectory, "Public"),
+			});
 			
 		
 		PublicDependencyModuleNames.AddRange(

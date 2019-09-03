@@ -11,15 +11,14 @@
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": true,
-	"IsBetaVersion": true,
+	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "DiscordRpc",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms" :
-			[
+			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
 				"Mac"

@@ -5,8 +5,12 @@ public class eXiSoundVis : ModuleRules
 {
 	public eXiSoundVis(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateIncludePaths.AddRange(new string[] {	"eXiSoundVis/Private" });
-		PublicIncludePaths.AddRange(new string[] { "eXiSoundVis/Public" });
+		PrivateIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Private"),
+		});
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Public"),
+		});
 		
 		PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core", "CoreUObject", "InputCore", "RHI", "Kiss_FFT" });
 

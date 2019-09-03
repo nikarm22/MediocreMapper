@@ -1,6 +1,8 @@
 // Some copyright should be here...
 
 using UnrealBuildTool;
+using System;
+using System.IO;
 
 public class VictoryBPLibrary : ModuleRules
 {
@@ -11,22 +13,12 @@ public class VictoryBPLibrary : ModuleRules
 		//4.15 Include What You Use
 		bEnforceIWYU = false;
 		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				"VictoryBPLibrary/Public"
-				
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				"VictoryBPLibrary/Private",
-				
-				// ... add other private include paths required here ...
-			}
-			);
+		PrivateIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Private"),
+		});
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Public"),
+		});
 			
 		
 		PublicDependencyModuleNames.AddRange(

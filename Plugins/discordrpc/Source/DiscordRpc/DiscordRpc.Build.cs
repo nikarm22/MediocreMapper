@@ -13,45 +13,37 @@ public class DiscordRpc : ModuleRules
     {
         Definitions.Add("DISCORD_DYNAMIC_LIB=1");
 
-        PublicIncludePaths.AddRange(
-            new string[] {
-                "DiscordRpc/Public"
-            }
-            );
+        string LibDirectory = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", "..", "Source", "ThirdParty", "DiscordRpcLibrary"));
+        
+		
+		PrivateIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Private"),
+		});
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "Public"),
+            Path.Combine(LibDirectory, "Include"),
+		});
 
-        PrivateIncludePaths.AddRange(
-            new string[] {
-                "DiscordRpc/Private"
-            }
-            );
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core",
+            "DiscordRpcLibrary",
+        });
 
-        PublicDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "Core",
-                "DiscordRpcLibrary"
-            }
-            );
+        PrivateDependencyModuleNames.AddRange(new string[] {
+            "CoreUObject",
+            "Engine",
+            "Slate",
+            "SlateCore",
+            "Projects"
+        });
 
-        PrivateDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "CoreUObject",
-                "Engine",
-                "Slate",
-                "SlateCore",
-                "Projects"
-            }
-            );
+        DynamicallyLoadedModuleNames.AddRange(new string[]{
+        });
 
-        DynamicallyLoadedModuleNames.AddRange(
-            new string[]
-            {
-                // ... add any modules that your module loads dynamically here ...
-            }
-            );
+        var lib = Path.Combine(ModuleDirectory, "..", "ThirdParty", "DiscordRpcLibrary", "Mac");
 
-        string BaseDirectory = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", "..", "Source", "ThirdParty", "DiscordRpcLibrary"));
-        PublicIncludePaths.Add(Path.Combine(BaseDirectory, "Include"));
+        PublicLibraryPaths.Add(lib);
+        PublicAdditionalLibraries.Add(Path.Combine(lib, "libdiscord-rpc.dylib"));
+        RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(lib, "libdiscord-rpc.dylib")));
     }
 }
